@@ -1,4 +1,23 @@
 <!--home.wxml-->
 <view class="container">
-  <van-search value="{{ value }}" placeholder="请输入搜索关键词" />
+  <van-sticky>
+    <van-search value="{{ value }}" placeholder="请输入搜索关键词" />
+    <view class="composition-list">
+      <view class="composition" wx:for="{{composition}}" wx:key="name">
+        {{item.cname}}
+      </view>
+    </view>
+  </van-sticky>
+  <!-- <van-row class="categories-wrap">
+    <van-col span="6" wx:for="{{categories}}" wx:key="id">
+      {{index}}: {{item.name}}
+    </van-col>
+  </van-row> -->
+  <view class="foods-list">
+    <view class="food" wx:for="{{foods}}" wx:key="id">
+      <view class="food-name">{{item.name}}</view>
+      <view class="value">{{item.composition.energy}}</view>
+    </view>
+  </view>
+  <van-loading size="24px">加载中...</van-loading>
 </view>

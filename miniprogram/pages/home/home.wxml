@@ -3,8 +3,10 @@
   <van-sticky>
     <van-search value="{{ value }}" placeholder="请输入搜索关键词" />
     <view class="composition-list">
-      <view class="composition" wx:for="{{composition}}" wx:key="name">
-        {{item.cname}}
+      <view wx:for="{{compositions}}" wx:key="name" bindtap="chooseComposition" data-name="{{item.name}}">
+        <view class="composition {{composition === item.name ? 'active' : ''}}">
+          {{item.cname}}
+        </view>
       </view>
     </view>
   </van-sticky>
@@ -16,7 +18,7 @@
   <view class="foods-list">
     <view class="food" wx:for="{{foods}}" wx:key="id">
       <view class="food-name">{{item.name}}</view>
-      <view class="value">{{item.composition.energy}}</view>
+      <view class="value">{{item.composition[composition]}}</view>
     </view>
   </view>
   <van-loading size="24px">加载中...</van-loading>

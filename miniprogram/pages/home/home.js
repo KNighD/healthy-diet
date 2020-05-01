@@ -3,7 +3,8 @@ const app = getApp()
 
 Page({
   data: {
-    composition: [
+    composition: 'energy',
+    compositions: [
       {
         name: 'energy',
         cname: '能量',
@@ -38,4 +39,12 @@ Page({
       },
     ],
   },
+  chooseComposition(e) {
+    if(e.currentTarget.dataset.name === this.data.composition) {
+      return;
+    }
+    this.setData({
+      composition: e.currentTarget.dataset.name
+    })
+  }
 })

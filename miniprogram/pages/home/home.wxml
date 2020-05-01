@@ -20,11 +20,16 @@
       {{index}}: {{item.name}}
     </van-col>
   </van-row> -->
-  <view class="foods-list">
+  <view class="foods-list van-hairline--bottom">
     <view class="food" wx:for="{{foods}}" wx:key="id">
       <view class="food-name">{{item.name}}</view>
       <view class="value">{{item.composition[composition]}}</view>
     </view>
   </view>
-  <van-loading size="24px">加载中...</van-loading>
+  <view class="footer">
+    <view wx:if="{{pageInfo.count && foods.length === pageInfo.count}}">没有更多啦</view>
+    <van-loading custom-class="loading" wx:else size="24px">
+      加载中...
+    </van-loading>
+  </view> 
 </view>

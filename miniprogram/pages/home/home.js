@@ -1,5 +1,6 @@
 //index.js
 const app = getApp()
+let loading = false
 
 Page({
   data: {
@@ -30,12 +31,18 @@ Page({
     pageInfo: {
       size: 20,
       current: 0,
-      count: 0,
+      count: null,
     },
     foods: [],
   },
   onLoad: async function () {
     await this.fetchFoods({ init: true })
+  },
+  async onReachBottom() {
+    const { foods, pageInfo } = this.data
+    if (pageInfo.count && foods.length < pageInfo.count) {
+      await this.fetchFoods({ init: false })
+    }
   },
   onSearch(e) {
     this.setData(
@@ -43,6 +50,7 @@ Page({
         searchKey: e.detail,
       },
       async function () {
+        console.log(loading, this.data.searchKey)
         await this.fetchFoods({
           init: true,
         })
@@ -65,34 +73,51 @@ Page({
     )
   },
   async fetchFoods({ init }) {
-    const db = wx.cloud.database()
     const { pageInfo, searchKey } = this.data
-    let count = pageInfo.count
-    if (init) {
-      count = await db.collection('foods').count()
+    if (loading) {
+      return
     }
+    loading = true
+    const db = wx.cloud.database()
+    let count = pageInfo.count
     const nameReg = searchKey
       ? db.RegExp({
           regexp: searchKey,
         })
       : /.*/
+    if (init) {
+      count = (
+        await db
+          .collection('foods')
+          .where({
+            name: nameReg,
+          })
+          .count()
+      ).total
+    }
     const current = init ? 0 : pageInfo.current + 1
+   
     const res = await db
       .collection('foods')
       .where({
         name: nameReg,
       })
-      .skip(pageInfo.size * pageInfo.current)
+      .skip(pageInfo.size * current)
       .limit(pageInfo.size)
       .get()
-    this.setData({
-      pageInfo: {
-        size: 20,
-        current,
-        count,
+    this.setData(
+      {
+        pageInfo: {
+          size: 20,
+          current,
+          count,
+        },
+        foods: init ? res.data : [...this.data.foods, ...res.data],
       },
-      foods: init ? res.data : [...this.data.foods, ...res.data],
-    })
+      function () {
+        loading = false
+      }
+    )
   },
   chooseComposition(e) {
     if (e.currentTarget.dataset.name === this.data.composition) {

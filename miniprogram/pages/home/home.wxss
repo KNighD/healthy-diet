@@ -35,3 +35,15 @@
 .food .value {
   margin: 4px 8px;
 }
+
+.footer {
+  width: 100%;
+  padding: 20px;
+  color: #969799;
+  font-size: 14px;
+  text-align: center;
+}
+
+.loading {
+  width: 100%;
+}

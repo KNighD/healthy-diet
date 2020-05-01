@@ -29,7 +29,7 @@ Page({
     pageInfo: {
       size: 20,
       current: 0,
-      count: 0
+      count: 0,
     },
     foods: [
       {
@@ -48,22 +48,26 @@ Page({
     const db = wx.cloud.database()
     const count = await db.collection('foods').count()
     const { pageInfo } = this.data
-    const res = await db.collection('foods').skip(pageInfo.size * pageInfo.current).limit(pageInfo.size).get()
+    const res = await db
+      .collection('foods')
+      .skip(pageInfo.size * pageInfo.current)
+      .limit(pageInfo.size)
+      .get()
     this.setData({
       pageInfo: {
         size: 20,
         current: pageInfo.current + 1,
-        count
+        count,
       },
-      foods: res.data
+      foods: res.data,
     })
   },
   chooseComposition(e) {
-    if(e.currentTarget.dataset.name === this.data.composition) {
-      return;
+    if (e.currentTarget.dataset.name === this.data.composition) {
+      return
     }
     this.setData({
-      composition: e.currentTarget.dataset.name
+      composition: e.currentTarget.dataset.name,
     })
-  }
+  },
 })

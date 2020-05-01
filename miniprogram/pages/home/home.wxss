@@ -3,7 +3,8 @@
 }
 
 .composition-list {
-  padding: 0 8px;
+  padding: 4px 8px;
+  margin-bottom: 2px;
   background-color: #fff;
   display: flex;
   justify-content: space-between;

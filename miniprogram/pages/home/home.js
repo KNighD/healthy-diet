@@ -26,6 +26,11 @@ Page({
         cname: '碳水化合物',
       },
     ],
+    pageInfo: {
+      size: 20,
+      current: 0,
+      count: 0
+    },
     foods: [
       {
         name: '大黄米（黍）',
@@ -38,6 +43,20 @@ Page({
         },
       },
     ],
+  },
+  onLoad: async function () {
+    const db = wx.cloud.database()
+    const count = await db.collection('foods').count()
+    const { pageInfo } = this.data
+    const res = await db.collection('foods').skip(pageInfo.size * pageInfo.current).limit(pageInfo.size).get()
+    this.setData({
+      pageInfo: {
+        size: 20,
+        current: pageInfo.current + 1,
+        count
+      },
+      foods: res.data
+    })
   },
   chooseComposition(e) {
     if(e.currentTarget.dataset.name === this.data.composition) {

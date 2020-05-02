@@ -51,7 +51,6 @@
 }
 .composition.active {
   color: #13c2c2;
-  font-size: 15px;
 }
 .foods-list {
   padding: 0 8px;

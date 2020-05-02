@@ -47,7 +47,7 @@ module.exports = {
     </view>
   </view>
   <view class="footer">
-    <view wx:if="{{pageInfo.count !== 0 && foods.length === pageInfo.count}}">没有更多啦</view>
+    <view wx:if="{{pageInfo.count === 0 || foods.length === pageInfo.count}}">没有更多啦</view>
     <van-loading custom-class="loading" wx:else size="24px">
       加载中...
     </van-loading>

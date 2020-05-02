@@ -176,8 +176,8 @@ Page({
     categoryIndex: 0,
     composition: compositions[0].name,
     compositionUnit: compositions[0].unit,
-    // 成分含量升序, 如 ['energy', 'desc'], 默认排序则为 null
-    compositionOrder: null,
+    // 成分含量排序
+    compositionOrder: 0,
     searchKey: '',
     compositions,
     pageInfo: {
@@ -264,11 +264,9 @@ Page({
 
     let collection = db.collection('foods').where(conditions)
 
-    if (compositionOrder) {
-      collection = collection.orderBy(
-        `composition.${compositionOrder[0]}`,
-        compositionOrder[1]
-      )
+    if (compositionOrder !== 0) {
+      const { name, order } = orderList[compositionOrder]
+      collection = collection.orderBy(`composition.${name}`, order)
     }
 
     const res = await collection
@@ -312,21 +310,28 @@ Page({
       showPicker: false,
     })
   },
-  onOrderCancel() {
-    this.setData({
-      showPicker: false,
-    })
+  onOrderCancel(event) {
+    this.setData(
+      {
+        showPicker: false,
+      },
+      function () {
+        this.selectComponent('#orderPicker').setIndexes([this.data.compositionOrder])
+      }
+    )
   },
   onOrderConfirm(event) {
     const { index } = event.detail
-    this.setData({
-      compositionOrder:
-        index === 0 ? null : [orderList[index].name, orderList[index].order],
-      showPicker: false,
-    }, function() {
-      this.fetchFoods({
-        init: true
-      })
-    })
+    this.setData(
+      {
+        compositionOrder: index,
+        showPicker: false,
+      },
+      function () {
+        this.fetchFoods({
+          init: true,
+        })
+      }
+    )
   },
 })

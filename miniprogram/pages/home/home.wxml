@@ -59,6 +59,7 @@ module.exports = {
     custom-style="height: 35%;"
   >
     <van-picker
+      id="orderPicker"
       show-toolbar
       bind:cancel="onOrderCancel"
       bind:confirm="onOrderConfirm"

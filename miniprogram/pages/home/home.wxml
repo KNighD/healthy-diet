@@ -7,6 +7,17 @@
       bind:search="onSearch"
       bind:clear="onClear"
     />
+    <scroll-view scroll-x="true" class="categories-list van-hairline--bottom">
+      <view 
+        class="category {{index === categoryIndex ? 'active' : ''}}"
+        wx:for="{{categoriesList}}"
+        wx:key="canme"
+        bindtap="chooseCategory"
+        data-index="{{index}}"
+      >
+        {{item.cname}}
+      </view>
+    </scroll-view >
     <view class="composition-list van-hairline--bottom">
       <view wx:for="{{compositions}}" wx:key="name" bindtap="chooseComposition" data-name="{{item.name}}">
         <view class="composition {{composition === item.name ? 'active' : ''}}">
@@ -15,11 +26,6 @@
       </view>
     </view>
   </van-sticky>
-  <!-- <van-row class="categories-wrap">
-    <van-col span="6" wx:for="{{categories}}" wx:key="id">
-      {{index}}: {{item.name}}
-    </van-col>
-  </van-row> -->
   <view class="foods-list van-hairline--bottom">
     <view class="food" wx:for="{{foods}}" wx:key="id">
       <view class="food-name">{{item.name}}</view>

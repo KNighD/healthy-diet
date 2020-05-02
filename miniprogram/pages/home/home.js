@@ -2,8 +2,93 @@
 const app = getApp()
 let loading = false
 
+const categoriesList = [
+  {
+    cname: '全部',
+    categories: [],
+  },
+  {
+    cname: '谷类',
+    categories: ['11'],
+  },
+  {
+    cname: '豆类',
+    categories: ['21'],
+  },
+  {
+    cname: '蔬菜类',
+    categories: ['31', '32', '33'],
+  },
+  {
+    cname: '菌藻类',
+    categories: ['34'],
+  },
+  {
+    cname: '水果类',
+    categories: ['41'],
+  },
+  {
+    cname: '水果类',
+    categories: ['41'],
+  },
+  {
+    cname: '水果类',
+    categories: ['41'],
+  },
+  {
+    cname: '水果类',
+    categories: ['41'],
+  },
+  {
+    cname: '坚果类',
+    categories: ['42'],
+  },
+  {
+    cname: '肉类',
+    categories: ['51', '52'],
+  },
+  {
+    cname: '乳类',
+    categories: ['53'],
+  },
+  {
+    cname: '蛋类',
+    categories: ['54'],
+  },
+  {
+    cname: '水产类',
+    categories: ['61', '62', '63'],
+  },
+  {
+    cname: '乳类',
+    categories: ['53'],
+  },
+  {
+    cname: '速食类',
+    categories: ['71'],
+  },
+  {
+    cname: '软饮料',
+    categories: ['85'],
+  },
+  {
+    cname: '调味品类',
+    categories: ['82', '83', '84'],
+  },
+  {
+    cname: '油脂类',
+    categories: ['81'],
+  },
+  {
+    cname: '酒精饮料',
+    categories: ['86'],
+  },
+]
+
 Page({
   data: {
+    categoriesList,
+    categoryIndex: 0,
     composition: 'energy',
     searchKey: '',
     compositions: [
@@ -35,23 +120,35 @@ Page({
     },
     foods: [],
   },
-  onLoad: async function () {
-    await this.fetchFoods({ init: true })
+  onLoad: function () {
+    this.fetchFoods({ init: true })
   },
   async onReachBottom() {
     const { foods, pageInfo } = this.data
     if (pageInfo.count && foods.length < pageInfo.count) {
-      await this.fetchFoods({ init: false })
+      this.fetchFoods({ init: false })
     }
+  },
+  chooseCategory(e) {
+    if (e.currentTarget.dataset.index === this.data.categoryIndex) {
+      return
+    }
+    this.setData(
+      {
+        categoryIndex: e.currentTarget.dataset.index,
+      },
+      function () {
+        this.fetchFoods({ init: true })
+      }
+    )
   },
   onSearch(e) {
     this.setData(
       {
         searchKey: e.detail,
       },
-      async function () {
-        console.log(loading, this.data.searchKey)
-        await this.fetchFoods({
+      function () {
+        this.fetchFoods({
           init: true,
         })
       }
@@ -65,43 +162,40 @@ Page({
       {
         searchKey: '',
       },
-      async function () {
-        await this.fetchFoods({
+      function () {
+        this.fetchFoods({
           init: true,
         })
       }
     )
   },
   async fetchFoods({ init }) {
-    const { pageInfo, searchKey } = this.data
+    const { pageInfo, searchKey, categoryIndex } = this.data
     if (loading) {
       return
     }
     loading = true
     const db = wx.cloud.database()
+    const _ = db.command
     let count = pageInfo.count
-    const nameReg = searchKey
-      ? db.RegExp({
-          regexp: searchKey,
-        })
-      : /.*/
+    const conditions = {}
+    if (searchKey) {
+      conditions.name = db.RegExp({
+        regexp: searchKey,
+      })
+    }
+    const categories = categoriesList[categoryIndex].categories
+    if (categories && categories.length > 0) {
+      conditions.category = _.in(categories)
+    }
     if (init) {
-      count = (
-        await db
-          .collection('foods')
-          .where({
-            name: nameReg,
-          })
-          .count()
-      ).total
+      count = (await db.collection('foods').where(conditions).count()).total
     }
     const current = init ? 0 : pageInfo.current + 1
-   
+
     const res = await db
       .collection('foods')
-      .where({
-        name: nameReg,
-      })
+      .where(conditions)
       .skip(pageInfo.size * current)
       .limit(pageInfo.size)
       .get()

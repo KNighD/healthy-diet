@@ -2,6 +2,34 @@
 const app = getApp()
 let loading = false
 
+const compositions = [
+  {
+    name: 'energy',
+    cname: '能量',
+    unit: '千卡/100g',
+  },
+  {
+    name: 'fat',
+    cname: '脂肪',
+    unit: 'g/100g',
+  },
+  {
+    name: 'cholesterol',
+    cname: '胆固醇',
+    unit: 'mg/100g',
+  },
+  {
+    name: 'protein',
+    cname: '蛋白质',
+    unit: 'g/100g',
+  },
+  {
+    name: 'carbohydrate',
+    cname: '碳水化合物',
+    unit: 'g/100g',
+  },
+]
+
 const categoriesList = [
   {
     cname: '全部',
@@ -85,46 +113,81 @@ const categoriesList = [
   },
 ]
 
+const orderList = [
+  {
+    cname: '默认排序',
+    order: null,
+  },
+  {
+    cname: '按能量升序',
+    order: 'asc',
+    name: 'energy',
+  },
+  {
+    cname: '按能量降序',
+    order: 'desc',
+    name: 'energy',
+  },
+  {
+    cname: '按脂肪升序',
+    order: 'asc',
+    name: 'fat',
+  },
+  {
+    cname: '按脂肪降序',
+    order: 'desc',
+    name: 'fat',
+  },
+  {
+    cname: '按胆固醇升序',
+    order: 'asc',
+    name: 'cholesterol',
+  },
+  {
+    cname: '按胆固醇降序',
+    order: 'desc',
+    name: 'cholesterol',
+  },
+  {
+    cname: '按蛋白质升序',
+    order: 'asc',
+    name: 'protein',
+  },
+  {
+    cname: '按蛋白质降序',
+    order: 'desc',
+    name: 'protein',
+  },
+  {
+    cname: '按碳水化合物降序',
+    order: 'asc',
+    name: 'carbohydrate',
+  },
+  {
+    cname: '按碳水化合物降序',
+    order: 'desc',
+    name: 'carbohydrate',
+  },
+]
+
 Page({
   data: {
     categoriesList,
     categoryIndex: 0,
-    composition: 'energy',
-    compositionUnit: '千卡/100g',
+    composition: compositions[0].name,
+    compositionUnit: compositions[0].unit,
+    // 成分含量升序, 如 ['energy', 'desc'], 默认排序则为 null
+    compositionOrder: null,
     searchKey: '',
-    compositions: [
-      {
-        name: 'energy',
-        cname: '能量',
-        unit: '千卡/100g'
-      },
-      {
-        name: 'fat',
-        cname: '脂肪',
-        unit: 'g/100g'
-      },
-      {
-        name: 'cholesterol',
-        cname: '胆固醇',
-        unit: 'mg/100g'
-      },
-      {
-        name: 'protein',
-        cname: '蛋白质',
-        unit: 'g/100g'
-      },
-      {
-        name: 'carbohydrate',
-        cname: '碳水化合物',
-        unit: 'g/100g'
-      },
-    ],
+    compositions,
     pageInfo: {
       size: 20,
       current: 0,
       count: null,
     },
     foods: [],
+    showPicker: false,
+    orderColumns: orderList.map((item) => item.cname),
   },
   onLoad: function () {
     this.fetchFoods({ init: true })
@@ -176,7 +239,7 @@ Page({
     )
   },
   async fetchFoods({ init }) {
-    const { pageInfo, searchKey, categoryIndex } = this.data
+    const { pageInfo, searchKey, categoryIndex, compositionOrder } = this.data
     if (loading) {
       return
     }
@@ -199,12 +262,20 @@ Page({
     }
     const current = init ? 0 : pageInfo.current + 1
 
-    const res = await db
-      .collection('foods')
-      .where(conditions)
+    let collection = db.collection('foods').where(conditions)
+
+    if (compositionOrder) {
+      collection = collection.orderBy(
+        `composition.${compositionOrder[0]}`,
+        compositionOrder[1]
+      )
+    }
+
+    const res = await collection
       .skip(pageInfo.size * current)
       .limit(pageInfo.size)
       .get()
+      .catch(console.error)
     this.setData(
       {
         pageInfo: {
@@ -221,14 +292,41 @@ Page({
   },
   chooseComposition(e) {
     const name = e.currentTarget.dataset.name
-    if ( name === this.data.composition) {
+    if (name === this.data.composition) {
       return
     }
     this.setData({
       composition: name,
-      compositionUnit: this.data.compositions.find(item => {
+      compositionUnit: this.data.compositions.find((item) => {
         return item.name === name
-      }).unit
+      }).unit,
+    })
+  },
+  showPicker() {
+    this.setData({
+      showPicker: true,
+    })
+  },
+  onPickerClose() {
+    this.setData({
+      showPicker: false,
+    })
+  },
+  onOrderCancel() {
+    this.setData({
+      showPicker: false,
+    })
+  },
+  onOrderConfirm(event) {
+    const { index } = event.detail
+    this.setData({
+      compositionOrder:
+        index === 0 ? null : [orderList[index].name, orderList[index].order],
+      showPicker: false,
+    }, function() {
+      this.fetchFoods({
+        init: true
+      })
     })
   },
 })

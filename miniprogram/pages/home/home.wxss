@@ -8,6 +8,20 @@
   padding: 8px;
 }
 
+.search-wrap {
+  background-color: #fff;
+  display: flex;
+}
+
+.search {
+  flex: 1;
+}
+
+.more {
+  padding: 8px;
+  margin-right: 8px;
+}
+
 .category {
   padding: 4px 8px;
   color: #455a64;

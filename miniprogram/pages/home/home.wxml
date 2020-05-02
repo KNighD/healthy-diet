@@ -64,6 +64,7 @@ module.exports = {
       bind:cancel="onOrderCancel"
       bind:confirm="onOrderConfirm"
       columns="{{ orderColumns }}"
+      title="选择排序"
       default-index="{{ 0 }}"
     /></van-popup>
 </view>

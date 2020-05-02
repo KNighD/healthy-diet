@@ -29,7 +29,10 @@
   <view class="foods-list van-hairline--bottom">
     <view class="food" wx:for="{{foods}}" wx:key="id">
       <view class="food-name">{{item.name}}</view>
-      <view class="value">{{item.composition[composition]}}</view>
+      <view class="food-info">
+        <view class="value">{{item.composition[composition]}}</view>
+        <view class="unit">{{compositionUnit}}</view>
+      </view>
     </view>
   </view>
   <view class="footer">

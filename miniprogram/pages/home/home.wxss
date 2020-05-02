@@ -49,10 +49,22 @@
   align-items: center;
 }
 .food-name {
+  color: #455a64;
   font-size: 14px;
 }
 
-.food .value {
+.food-info {
+  display: flex;
+  align-items: baseline;
+}
+
+.food-info .unit{
+  font-size: 13px;
+  color: #455a64;
+}
+
+.food-info .value {
+  font-size: 18px;
   margin: 4px 8px;
 }
 

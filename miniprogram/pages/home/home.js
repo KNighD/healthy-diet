@@ -90,27 +90,33 @@ Page({
     categoriesList,
     categoryIndex: 0,
     composition: 'energy',
+    compositionUnit: '千卡/100g',
     searchKey: '',
     compositions: [
       {
         name: 'energy',
         cname: '能量',
+        unit: '千卡/100g'
       },
       {
         name: 'fat',
         cname: '脂肪',
+        unit: 'g/100g'
       },
       {
         name: 'cholesterol',
         cname: '胆固醇',
+        unit: 'mg/100g'
       },
       {
         name: 'protein',
         cname: '蛋白质',
+        unit: 'g/100g'
       },
       {
         name: 'carbohydrate',
         cname: '碳水化合物',
+        unit: 'g/100g'
       },
     ],
     pageInfo: {
@@ -214,11 +220,15 @@ Page({
     )
   },
   chooseComposition(e) {
-    if (e.currentTarget.dataset.name === this.data.composition) {
+    const name = e.currentTarget.dataset.name
+    if ( name === this.data.composition) {
       return
     }
     this.setData({
-      composition: e.currentTarget.dataset.name,
+      composition: name,
+      compositionUnit: this.data.compositions.find(item => {
+        return item.name === name
+      }).unit
     })
   },
 })

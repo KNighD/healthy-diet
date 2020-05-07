@@ -6,7 +6,7 @@
     "backgroundColor": "#F6F6F6",
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#F6F6F6",
-    "navigationBarTitleText": "轻饮食",
+    "navigationBarTitleText": "食物营养表",
     "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json"
